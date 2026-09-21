@@ -1,0 +1,16 @@
+{
+  "llm_invocations": 0,
+  "cache_hits": 0,
+  "total_latency_seconds": 0.0,
+  "total_input_tokens": 0,
+  "total_output_tokens": 0,
+  "disagreements": 0,
+  "equivalent_normalized_count": 0,
+  "vision_invocations": 0,
+  "vision_latency_seconds": 0.0,
+  "vision_input_tokens": 0,
+  "vision_output_tokens": 0,
+  "total_emails": 520,
+  "mode": "deterministic",
+  "timestamp": 1790025543.3927429
+}

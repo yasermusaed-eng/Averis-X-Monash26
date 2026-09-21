@@ -1,0 +1,11 @@
+{
+  "explanations_count": 16,
+  "drafts_count": 3,
+  "total_latency_seconds": 0.01900000000000001,
+  "total_input_tokens": 0,
+  "total_output_tokens": 0,
+  "cache_hits": 37,
+  "models_used": {
+    "deterministic": 19
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "deterministic": {
+    "classification_macro_f1": 1.0,
+    "defect_f1": 1.0,
+    "reliability_f1": 1.0,
+    "end_to_end_defect_rate": 1.0,
+    "final_weighted_score": 1.0,
+    "runtime_seconds": 0.844
+  },
+  "hybrid": {
+    "classification_macro_f1": 1.0,
+    "defect_f1": 0.989010989010989,
+    "reliability_f1": 0.8648648648648648,
+    "end_to_end_defect_rate": 0.9565217391304348,
+    "final_weighted_score": 0.9760630673674152,
+    "runtime_seconds": 176.731
+  }
+}

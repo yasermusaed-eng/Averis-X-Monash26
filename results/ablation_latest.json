@@ -1,0 +1,51 @@
+{
+  "timestamp": "2026-09-20T14:01:41.434089+00:00",
+  "total_emails": 520,
+  "deterministic": {
+    "mode": "deterministic",
+    "runtime_seconds": 0.96,
+    "llm_invocations": 0,
+    "llm_invocation_rate_pct": 0.0,
+    "cache_hits": 0,
+    "defects_flagged": 46,
+    "escalations": 20,
+    "disagreements": 0,
+    "equivalent_normalized": 0,
+    "scores": {
+      "stage1_macro_f1": 1.0,
+      "stage1_accuracy": 1.0,
+      "stage3_defect_f1": 1.0,
+      "stage3_exact_match": 1.0,
+      "reliability_f1": 1.0,
+      "end_to_end_rate": 1.0,
+      "final_score": 1.0
+    }
+  },
+  "hybrid": {
+    "mode": "hybrid",
+    "runtime_seconds": 146.49,
+    "llm_invocations": 12,
+    "llm_invocation_rate_pct": 2.31,
+    "cache_hits": 0,
+    "llm_latency_seconds": 174.18,
+    "input_tokens": 18650,
+    "output_tokens": 10313,
+    "defects_flagged": 49,
+    "escalations": 15,
+    "disagreements": 0,
+    "equivalent_normalized": 10,
+    "scores": {
+      "stage1_macro_f1": 1.0,
+      "stage1_accuracy": 1.0,
+      "stage3_defect_f1": 1.0,
+      "stage3_exact_match": 1.0,
+      "reliability_f1": 0.8571,
+      "end_to_end_rate": 1.0,
+      "final_score": 1.0
+    }
+  },
+  "delta": {
+    "runtime_diff_seconds": 145.53,
+    "score_diff": 0.0
+  }
+}

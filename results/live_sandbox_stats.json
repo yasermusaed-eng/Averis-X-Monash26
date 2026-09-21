@@ -1,0 +1,11 @@
+{
+  "total_sandbox_audits": 39,
+  "gemini_invocations": 39,
+  "mismatches_flagged": 19,
+  "harmonized_matches": 20,
+  "total_latency_seconds": 105.93,
+  "total_input_tokens": 60490,
+  "total_output_tokens": 30420,
+  "last_audit_timestamp": 1790015076.7563546,
+  "model_used": "Gemini 3.5 Flash"
+}

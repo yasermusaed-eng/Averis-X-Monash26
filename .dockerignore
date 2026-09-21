@@ -1,0 +1,84 @@
+# =============================================================================
+# SDOC Production .dockerignore
+# Keeps container image minimal for fast Cloud Run deployments
+# =============================================================================
+
+# Version control
+.git
+.gitignore
+.gitattributes
+
+# Python artifacts, wheels, and bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+.venv/
+env/
+.env_*/
+ENV/
+
+# Secrets and local environment files
+.env
+.env.*
+*.env
+!*.env.example
+
+# IDE & Editor caches
+.idea/
+.vscode/
+.vs/
+*.swp
+*.swo
+*~
+*.sublime-*
+
+# Testing & Coverage reports
+.coverage
+.coverage.*
+.pytest_cache/
+.tox/
+htmlcov/
+
+# Local session caches & runtime state
+.upload_cache/
+results/.assistant_cache/
+results/.ocr_cache/
+results/.cache/
+results/storage_local.json
+results/selfeval_history.jsonl
+*.log
+*.tmp
+*.bak
+
+# Temporary and scratch directories
+scratch/
+tmp/
+temp/
+
+# Large training / generator source files (not used by app runtime)
+data_v2/
+
+# Docker build configs themselves
+Dockerfile*
+.dockerignore
+docker-compose*.yml

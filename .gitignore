@@ -1,0 +1,25 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+*.class
+
+# Environments & Secrets
+.env
+.env.*
+!.env.example
+*.log
+results/storage_local.json
+results/.llm_cache/
+results/.assistant_cache/
+results/.models_cache.json
+
+
+# IDE & Editor caches
+.vs/
+.vscode/
+.idea/
+
+# Secret Ground Truth (Do not publish organizer answer key)
+data_v2/ground_truth.json
+
+.upload_cache/

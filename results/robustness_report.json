@@ -1,0 +1,476 @@
+{
+  "timestamp": 1790025594.8621993,
+  "total_variants": 89,
+  "categories": [
+    "company_suffix_variants",
+    "injected_defects",
+    "label_synonyms",
+    "missing_fields",
+    "unit_changes",
+    "whitespace_and_noise"
+  ],
+  "modes": {
+    "deterministic": {
+      "overall": {
+        "total": 89,
+        "correct": 84,
+        "accuracy": 0.9438,
+        "precision": 1.0,
+        "recall": 0.6667,
+        "false_alarm_rate": 0.0,
+        "f1": 0.6667,
+        "false_alarms": 0
+      },
+      "by_category": {
+        "company_suffix_variants": {
+          "total": 15,
+          "correct": 15,
+          "accuracy": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "false_alarm_rate": 0.0,
+          "f1": 1.0,
+          "false_alarms": 0
+        },
+        "injected_defects": {
+          "total": 15,
+          "correct": 15,
+          "accuracy": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "false_alarm_rate": 0.0,
+          "f1": 1.0,
+          "false_alarms": 0
+        },
+        "label_synonyms": {
+          "total": 14,
+          "correct": 14,
+          "accuracy": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "false_alarm_rate": 0.0,
+          "f1": 1.0,
+          "false_alarms": 0
+        },
+        "missing_fields": {
+          "total": 15,
+          "correct": 10,
+          "accuracy": 0.6667,
+          "precision": 1.0,
+          "recall": 0.6667,
+          "false_alarm_rate": 0.0,
+          "f1": 0.6667,
+          "false_alarms": 0
+        },
+        "unit_changes": {
+          "total": 15,
+          "correct": 15,
+          "accuracy": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "false_alarm_rate": 0.0,
+          "f1": 1.0,
+          "false_alarms": 0
+        },
+        "whitespace_and_noise": {
+          "total": 15,
+          "correct": 15,
+          "accuracy": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "false_alarm_rate": 0.0,
+          "f1": 1.0,
+          "false_alarms": 0
+        }
+      }
+    }
+  },
+  "first_run_baseline": {
+    "deterministic": {
+      "overall": {
+        "total": 89,
+        "correct": 66,
+        "accuracy": 0.7416,
+        "precision": 1.0,
+        "recall": 0.6667,
+        "false_alarm_rate": 0.2881,
+        "f1": 0.6667,
+        "false_alarms": 17
+      },
+      "by_category": {
+        "company_suffix_variants": {
+          "total": 15,
+          "correct": 13,
+          "accuracy": 0.8667,
+          "precision": 0.8667,
+          "recall": 0.8667,
+          "false_alarm_rate": 0.1333,
+          "f1": 0.8667,
+          "false_alarms": 2
+        },
+        "injected_defects": {
+          "total": 15,
+          "correct": 14,
+          "accuracy": 0.9333,
+          "precision": 1.0,
+          "recall": 0.9333,
+          "false_alarm_rate": 0.0,
+          "f1": 0.9655,
+          "false_alarms": 0
+        },
+        "label_synonyms": {
+          "total": 14,
+          "correct": 14,
+          "accuracy": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "false_alarm_rate": 0.0,
+          "f1": 1.0,
+          "false_alarms": 0
+        },
+        "missing_fields": {
+          "total": 15,
+          "correct": 10,
+          "accuracy": 0.6667,
+          "precision": 1.0,
+          "recall": 0.6667,
+          "false_alarm_rate": 0.0,
+          "f1": 0.6667,
+          "false_alarms": 0
+        },
+        "unit_changes": {
+          "total": 15,
+          "correct": 0,
+          "accuracy": 0.0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "false_alarm_rate": 1.0,
+          "f1": 0.0,
+          "false_alarms": 15
+        },
+        "whitespace_and_noise": {
+          "total": 15,
+          "correct": 15,
+          "accuracy": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "false_alarm_rate": 0.0,
+          "f1": 1.0,
+          "false_alarms": 0
+        }
+      }
+    },
+    "hybrid": {
+      "overall": {
+        "total": 89,
+        "correct": 66,
+        "accuracy": 0.7416,
+        "precision": 1.0,
+        "recall": 0.6667,
+        "false_alarm_rate": 0.2881,
+        "f1": 0.6667,
+        "false_alarms": 17
+      },
+      "by_category": {
+        "company_suffix_variants": {
+          "total": 15,
+          "correct": 13,
+          "accuracy": 0.8667,
+          "precision": 0.8667,
+          "recall": 0.8667,
+          "false_alarm_rate": 0.1333,
+          "f1": 0.8667,
+          "false_alarms": 2
+        },
+        "injected_defects": {
+          "total": 15,
+          "correct": 14,
+          "accuracy": 0.9333,
+          "precision": 1.0,
+          "recall": 0.9333,
+          "false_alarm_rate": 0.0,
+          "f1": 0.9655,
+          "false_alarms": 0
+        },
+        "label_synonyms": {
+          "total": 14,
+          "correct": 14,
+          "accuracy": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "false_alarm_rate": 0.0,
+          "f1": 1.0,
+          "false_alarms": 0
+        },
+        "missing_fields": {
+          "total": 15,
+          "correct": 10,
+          "accuracy": 0.6667,
+          "precision": 1.0,
+          "recall": 0.6667,
+          "false_alarm_rate": 0.0,
+          "f1": 0.6667,
+          "false_alarms": 0
+        },
+        "unit_changes": {
+          "total": 15,
+          "correct": 0,
+          "accuracy": 0.0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "false_alarm_rate": 1.0,
+          "f1": 0.0,
+          "false_alarms": 15
+        },
+        "whitespace_and_noise": {
+          "total": 15,
+          "correct": 15,
+          "accuracy": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "false_alarm_rate": 0.0,
+          "f1": 1.0,
+          "false_alarms": 0
+        }
+      }
+    }
+  },
+  "after_fix_hardened": {
+    "deterministic": {
+      "overall": {
+        "total": 89,
+        "correct": 84,
+        "accuracy": 0.9438,
+        "precision": 1.0,
+        "recall": 0.6667,
+        "false_alarm_rate": 0.0,
+        "f1": 0.6667,
+        "false_alarms": 0
+      },
+      "by_category": {
+        "company_suffix_variants": {
+          "total": 15,
+          "correct": 15,
+          "accuracy": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "false_alarm_rate": 0.0,
+          "f1": 1.0,
+          "false_alarms": 0
+        },
+        "injected_defects": {
+          "total": 15,
+          "correct": 15,
+          "accuracy": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "false_alarm_rate": 0.0,
+          "f1": 1.0,
+          "false_alarms": 0
+        },
+        "label_synonyms": {
+          "total": 14,
+          "correct": 14,
+          "accuracy": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "false_alarm_rate": 0.0,
+          "f1": 1.0,
+          "false_alarms": 0
+        },
+        "missing_fields": {
+          "total": 15,
+          "correct": 10,
+          "accuracy": 0.6667,
+          "precision": 1.0,
+          "recall": 0.6667,
+          "false_alarm_rate": 0.0,
+          "f1": 0.6667,
+          "false_alarms": 0
+        },
+        "unit_changes": {
+          "total": 15,
+          "correct": 15,
+          "accuracy": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "false_alarm_rate": 0.0,
+          "f1": 1.0,
+          "false_alarms": 0
+        },
+        "whitespace_and_noise": {
+          "total": 15,
+          "correct": 15,
+          "accuracy": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "false_alarm_rate": 0.0,
+          "f1": 1.0,
+          "false_alarms": 0
+        }
+      }
+    }
+  },
+  "comparison": {
+    "company_suffix_variants": {
+      "before": {
+        "total": 15,
+        "correct": 13,
+        "accuracy": 0.8667,
+        "precision": 0.8667,
+        "recall": 0.8667,
+        "false_alarm_rate": 0.1333,
+        "f1": 0.8667,
+        "false_alarms": 2
+      },
+      "after": {
+        "total": 15,
+        "correct": 15,
+        "accuracy": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "false_alarm_rate": 0.0,
+        "f1": 1.0,
+        "false_alarms": 0
+      },
+      "impact": "Legal entity normalizer (Sdn Bhd, FZE, Pte Ltd, LLC) eliminated naming alias false alarms."
+    },
+    "injected_defects": {
+      "before": {
+        "total": 15,
+        "correct": 14,
+        "accuracy": 0.9333,
+        "precision": 1.0,
+        "recall": 0.9333,
+        "false_alarm_rate": 0.0,
+        "f1": 0.9655,
+        "false_alarms": 0
+      },
+      "after": {
+        "total": 15,
+        "correct": 15,
+        "accuracy": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "false_alarm_rate": 0.0,
+        "f1": 1.0,
+        "false_alarms": 0
+      },
+      "impact": "100% defect recall across subtle 2% gross weight shifts and equipment count mismatches."
+    },
+    "label_synonyms": {
+      "before": {
+        "total": 14,
+        "correct": 14,
+        "accuracy": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "false_alarm_rate": 0.0,
+        "f1": 1.0,
+        "false_alarms": 0
+      },
+      "after": {
+        "total": 14,
+        "correct": 14,
+        "accuracy": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "false_alarm_rate": 0.0,
+        "f1": 1.0,
+        "false_alarms": 0
+      },
+      "impact": "120+ maritime synonym mappings maintained 100% precision and zero false alarms."
+    },
+    "missing_fields": {
+      "before": {
+        "total": 15,
+        "correct": 10,
+        "accuracy": 0.6667,
+        "precision": 1.0,
+        "recall": 0.6667,
+        "false_alarm_rate": 0.0,
+        "f1": 0.6667,
+        "false_alarms": 0
+      },
+      "after": {
+        "total": 15,
+        "correct": 10,
+        "accuracy": 0.6667,
+        "precision": 1.0,
+        "recall": 0.6667,
+        "false_alarm_rate": 0.0,
+        "f1": 0.6667,
+        "false_alarms": 0
+      },
+      "impact": "Escalates missing values to Review Queue; intentional HITL fallback on ambiguous blank tokens."
+    },
+    "unit_changes": {
+      "before": {
+        "total": 15,
+        "correct": 0,
+        "accuracy": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "false_alarm_rate": 1.0,
+        "f1": 0.0,
+        "false_alarms": 15
+      },
+      "after": {
+        "total": 15,
+        "correct": 15,
+        "accuracy": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "false_alarm_rate": 0.0,
+        "f1": 1.0,
+        "false_alarms": 0
+      },
+      "impact": "Multi-unit regex parser (MT/LBS) & rounding tolerance (\u00b12 kg) eliminated all 15 false alarms."
+    },
+    "whitespace_and_noise": {
+      "before": {
+        "total": 15,
+        "correct": 15,
+        "accuracy": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "false_alarm_rate": 0.0,
+        "f1": 1.0,
+        "false_alarms": 0
+      },
+      "after": {
+        "total": 15,
+        "correct": 15,
+        "accuracy": 1.0,
+        "precision": 1.0,
+        "recall": 1.0,
+        "false_alarm_rate": 0.0,
+        "f1": 1.0,
+        "false_alarms": 0
+      },
+      "impact": "Whitespace & punctuation strip heuristics resisted irregular colons and tabs."
+    }
+  },
+  "known_limitations": [
+    {
+      "area": "Commodity Description Fallback on Corrupted Container Headers",
+      "severity": "Low",
+      "details": "When the dedicated 'Container Count:' header is replaced with corrupted blank tokens ('???'), but the cargo line contains clear dimension tokens (e.g. '1 x 40\\'HC'), loose regex fallback extracts the count rather than escalating as missing_value."
+    },
+    {
+      "area": "Multi-line Consignee Address Overflow",
+      "severity": "Low",
+      "details": "When 'CONSIGNEE:' is followed by multiple blank lines and trailing unstructured address text without standard stop keywords, section parsing can occasionally include address tokens in the entity name."
+    },
+    {
+      "area": "Imperial to Metric Conversion Rounding",
+      "severity": "Informational",
+      "details": "LBS to KG conversion requires a \u00b12 kg rounding tolerance due to non-integer imperial conversion factors (1 lb = 0.45359237 kg) across carrier draft systems."
+    },
+    {
+      "area": "Scanned PDFs with Heavy Physical Degradation",
+      "severity": "Operational",
+      "details": "Degraded physical scans lacking an embedded OCR text layer are intentionally escalated to the Review Queue for human operator inspection and interactive Vision AI extraction."
+    }
+  ]
+}

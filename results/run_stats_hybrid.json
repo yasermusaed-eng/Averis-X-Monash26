@@ -1,0 +1,12 @@
+{
+  "llm_invocations": 41,
+  "cache_hits": 0,
+  "total_latency_seconds": 232.46669483184814,
+  "total_input_tokens": 66714,
+  "total_output_tokens": 27530,
+  "disagreements": 0,
+  "equivalent_normalized_count": 3,
+  "total_emails": 520,
+  "mode": "hybrid",
+  "timestamp": 1790006389.858237
+}

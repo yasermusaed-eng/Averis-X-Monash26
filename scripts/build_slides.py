@@ -494,10 +494,16 @@ def generate_html_presentation():
 
     /* Print-to-PDF rules */
     @media print {
-      body {
+      * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      html, body {
         background: #030712 !important;
         color: #f8fafc !important;
+        margin: 0 !important;
         padding: 0 !important;
+        width: 100% !important;
       }
       .deck-topbar {
         display: none !important;
@@ -508,17 +514,38 @@ def generate_html_presentation():
         box-shadow: none !important;
         border: none !important;
         border-radius: 0 !important;
+        background: transparent !important;
+        position: static !important;
+        overflow: visible !important;
+        height: auto !important;
+        aspect-ratio: auto !important;
+        display: block !important;
       }
       .slide {
         position: relative !important;
         display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
         opacity: 1 !important;
         pointer-events: auto !important;
         transform: none !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-height: 420pt !important;
+        padding: 24px 36px 18px 36px !important;
+        break-after: page !important;
         page-break-after: always !important;
-        width: 100vw !important;
-        height: 56.25vw !important; /* 16:9 */
-        padding: 36px !important;
+        background: radial-gradient(circle at top right, rgba(14, 165, 233, 0.08), transparent 45%),
+                    radial-gradient(circle at bottom left, rgba(99, 102, 241, 0.06), transparent 45%),
+                    #0b132b !important;
+        border: none !important;
+        border-radius: 0 !important;
+        overflow: hidden !important;
+        box-sizing: border-box !important;
+      }
+      .slide:last-child {
+        break-after: avoid !important;
+        page-break-after: avoid !important;
       }
       @page {
         size: 16in 9in landscape;

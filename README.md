@@ -28,6 +28,7 @@ This repository directly fulfills all **Preliminary Round Submission Components*
 | **8. Clear Setup Instructions** | [Section 7: Local & Docker Setup](#-7-local-setup-instructions) | **Mandatory GitHub Component** | 🟢 Verified |
 | **9. Cloud Run Deployment** | [Section 9: Cloud Run Deployment](#-9-how-to-deploy-to-google-cloud-run), [`deploy.sh`](deploy.sh), [`deploy.ps1`](deploy.ps1) | **AI & Cloud Infrastructure Mandate** | 🟢 Verified |
 | **10. Official Technical Spec** | [docs/SUBMISSION.md](docs/SUBMISSION.md) *(Architecture, Details, Challenges, Roadmap)* | **Mandatory Documentation Link** | 🟢 Verified |
+| **11. 12-Slide Pitch Deck** | [docs/SLIDES.html](docs/SLIDES.html) *(Interactive 16:9 Deck with PDF Export)* & [docs/SLIDES.md](docs/SLIDES.md) | **Mandatory Slide Deck Link** | 🟢 Verified |
 
 ---
 
@@ -388,7 +389,7 @@ For quick entry into the [Official Submission Google Form](https://forms.gle/nna
 | **2. Project Description / Summary** | *In global container logistics, documentation mismatches between Shipping Instructions (SI) and draft Bills of Lading (BL) cause vessel rollovers, demurrage fines ($150–$400/day/container), and customs holds. SDOC is an enterprise automated verification platform synthesizing sub-millisecond deterministic parsing with Google Gemini multimodal AI. It classifies operations emails, screens packages, extracts 7 commercial fields across multi-format attachments (.pdf, .docx, .xlsx, .txt), resolves legal aliases, and detects discrepancies in 1.05s across 520 emails (1.0000 benchmark score). Features include Vision AI for scans, on-demand AI explanations, ready-to-send carrier amendment notices, stage-isolated failure recovery, and Google Cloud Run deployment.* |
 | **3. GitHub Repository Link** | Link to this repository (with complete source code, tests, and setup instructions) |
 | **4. Live Prototype / Demo Link** | Public Google Cloud Run URL (e.g., deployed via `deploy.sh` / `deploy.ps1`) or local interactive Streamlit server |
-| **5. Slide Deck / Documentation Link** | Link to [`docs/SUBMISSION.md`](docs/SUBMISSION.md) *(Covers Technical Architecture, Implementation Details, Challenges Faced, and Future Roadmap)* |
+| **5. Slide Deck / Documentation Link** | Link to [`docs/SLIDES.html`](docs/SLIDES.html) *(Interactive 16:9 Presentation Deck)* and [`docs/SUBMISSION.md`](docs/SUBMISSION.md) *(Comprehensive Architecture, Details, Challenges & Roadmap)* |
 | **6. Demo Video Link** | Public or Unlisted YouTube / Google Drive link (< 5 minutes) |
 
 ### 5-Minute Demo Video Script Outline (Strictly ≤ 5 Mins to Avoid Penalty)

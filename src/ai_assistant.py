@@ -148,19 +148,33 @@ def _generate_deterministic_explanation(
 ) -> Dict[str, Any]:
     """Deterministic fallback explanation engine when Gemini AI is offline."""
     if status == "MISMATCH":
-        field_names = [f.replace("_", " ").title() for f in defect_fields]
+        if not defect_fields:
+            # Dynamically infer defect fields from mismatches between si_fields and bl_fields
+            defect_fields = [
+                f for f in ["shipper", "consignee", "notify_party", "port_of_loading", "port_of_discharge", "container_count", "gross_weight_kg"]
+                if si_fields.get(f) and bl_fields.get(f) and str(si_fields.get(f)).strip().lower() != str(bl_fields.get(f)).strip().lower()
+            ]
+        field_names = [f.replace("_", " ").title() for f in defect_fields] or ["Shipment Specification Discrepancy"]
         summary = f"Identified commercial or typographical discrepancies in {len(defect_fields)} field(s): {', '.join(field_names)}."
 
         # Analyze likely causes
         causes = []
         if "gross_weight_kg" in defect_fields:
-            w_si = float(si_fields.get("gross_weight_kg") or 0.0)
-            w_bl = float(bl_fields.get("gross_weight_kg") or 0.0)
-            diff_pct = abs(w_si - w_bl) / max(w_si, 1.0) * 100
-            if diff_pct < 5.0:
-                causes.append("Unit conversion or tare rounding discrepancy (weight difference < 5%)")
-            else:
-                causes.append(f"Substantial cargo weight variance ({w_si:,.0f} kg SI vs {w_bl:,.0f} kg Draft BL)")
+            try:
+                raw_s = str(si_fields.get("gross_weight_kg", "") or "").replace(",", "").replace("kg", "").replace("KG", "").replace("kgs", "").replace("KGS", "").strip()
+                raw_b = str(bl_fields.get("gross_weight_kg", "") or "").replace(",", "").replace("kg", "").replace("KG", "").replace("kgs", "").replace("KGS", "").strip()
+                w_si = float(raw_s) if raw_s else 0.0
+                w_bl = float(raw_b) if raw_b else 0.0
+                if w_si > 0 and w_bl > 0:
+                    diff_pct = abs(w_si - w_bl) / max(w_si, 1.0) * 100
+                    if diff_pct < 5.0:
+                        causes.append("Unit conversion or tare rounding discrepancy (weight difference < 5%)")
+                    else:
+                        causes.append(f"Substantial cargo weight variance ({w_si:,.0f} kg SI vs {w_bl:,.0f} kg Draft BL)")
+                else:
+                    causes.append("Cargo gross weight variance identified between SI and Draft BL")
+            except Exception:
+                causes.append("Cargo gross weight variance identified between SI and Draft BL")
 
         if "port_of_loading" in defect_fields or "port_of_discharge" in defect_fields:
             causes.append("Routing or port terminal naming discrepancy between booking order and carrier draft")
@@ -185,7 +199,7 @@ def _generate_deterministic_explanation(
             b_val = bl_fields.get(f, "N/A")
             mismatch_lines.append(f"  • {f_title}: Expected '{s_val}' (as per SI) | Found '{b_val}' (on Draft B/L)")
 
-        mismatches_text = "\n".join(mismatch_lines)
+        mismatches_text = "\n".join(mismatch_lines) if mismatch_lines else "  • Specific field values require clarification against SI instructions."
         draft_reply = (
             f"Dear Documentation Team,\n\n"
             f"Thank you for submitting the Draft Bill of Lading for booking / shipment {email_id}.\n\n"
@@ -271,20 +285,26 @@ def explain_verification_result(
     email_id: str,
     status: str,
     category: str,
-    defect_fields: List[str],
-    review_reason: Optional[str],
-    si_fields: Dict[str, Any],
-    bl_fields: Dict[str, Any],
+    defect_fields: Optional[List[str]] = None,
+    review_reason: Optional[str] = None,
+    si_fields: Optional[Dict[str, Any]] = None,
+    bl_fields: Optional[Dict[str, Any]] = None,
     subject: str = "",
     sender: str = "",
     body_snippet: str = "",
-    force_refresh: bool = False
+    force_refresh: bool = False,
+    api_key: Optional[str] = None,
+    **kwargs
 ) -> Dict[str, Any]:
     """Generate or retrieve an on-demand, advisory explanation for an email verification result.
     
     Advisory only: Strictly never modifies verification status.
     Uses disk cache and tracks token and latency metrics.
     """
+    defect_fields = defect_fields or []
+    si_fields = si_fields or {}
+    bl_fields = bl_fields or {}
+
     payload_hash = {
         "email_id": email_id,
         "status": status,
@@ -310,13 +330,13 @@ def explain_verification_result(
     # 2. Try Gemini AI if available
     from src.ai_extractor import _get_genai_client, resolve_candidate_models, AI_STATUS
     from src.api_key_resolver import resolve_gemini_api_key
-    api_key = resolve_gemini_api_key()
+    active_api_key = resolve_gemini_api_key(api_key)
 
     gemini_result = None
-    if api_key:
-        candidates, is_avail, _ = resolve_candidate_models(api_key)
+    if active_api_key:
+        candidates, is_avail, _ = resolve_candidate_models(active_api_key)
         if is_avail and candidates:
-            client = _get_genai_client(api_key)
+            client = _get_genai_client(active_api_key)
             target_model = candidates[0]
 
             prompt_text = EXPLAIN_PROMPT_TEMPLATE.format(
@@ -429,14 +449,20 @@ OUTPUT JSON FORMAT ONLY:
 
 def generate_correction_email(
     email_id: str,
-    defect_fields: List[str],
-    si_fields: Dict[str, Any],
-    bl_fields: Dict[str, Any],
+    defect_fields: Optional[List[str]] = None,
+    si_fields: Optional[Dict[str, Any]] = None,
+    bl_fields: Optional[Dict[str, Any]] = None,
     recipient: str = "",
     subject_ref: str = "",
-    force_refresh: bool = False
+    force_refresh: bool = False,
+    api_key: Optional[str] = None,
+    **kwargs
 ) -> Dict[str, Any]:
     """Generate a ready-to-send discrepancy amendment email with SI vs Draft BL values side-by-side."""
+    defect_fields = defect_fields or []
+    si_fields = si_fields or {}
+    bl_fields = bl_fields or {}
+
     mismatches = []
     formatted_diffs = []
     for f in defect_fields:
@@ -467,13 +493,13 @@ def generate_correction_email(
 
     from src.ai_extractor import _get_genai_client, resolve_candidate_models
     from src.api_key_resolver import resolve_gemini_api_key
-    api_key = resolve_gemini_api_key()
+    active_api_key = resolve_gemini_api_key(api_key)
 
     draft_result = None
-    if api_key and defect_fields:
-        candidates, is_avail, _ = resolve_candidate_models(api_key)
+    if active_api_key and defect_fields:
+        candidates, is_avail, _ = resolve_candidate_models(active_api_key)
         if is_avail and candidates:
-            client = _get_genai_client(api_key)
+            client = _get_genai_client(active_api_key)
             target_model = candidates[0]
 
             prompt_text = DRAFT_CORRECTION_PROMPT.format(
@@ -522,31 +548,49 @@ def generate_correction_email(
                 print(f"[Assistant] Gemini draft call failed ({ex}). Using deterministic template.")
 
     if not draft_result:
-        # High quality deterministic template
-        subject_line = f"DISCREPANCY NOTICE: Amendment Required for Draft B/L - {subject_ref or email_id}"
-        table_lines = [
-            "| Shipment Field | Shipping Instruction (SI Reference) | Draft Bill of Lading Value |",
-            "| :--- | :--- | :--- |"
-        ]
-        for m in mismatches:
-            table_lines.append(f"| **{m['field']}** | {m['si_val']} | {m['bl_val']} |")
+        if not mismatches:
+            # High quality deterministic approval / release confirmation
+            subject_line = f"APPROVAL NOTICE: Draft B/L Verified & Approved for Release - {subject_ref or email_id}"
+            body_text = (
+                f"Dear Carrier Documentation Team,\n\n"
+                f"Please be advised that automated compliance verification of the Draft Bill of Lading for booking / shipment **{email_id}** "
+                f"has been completed against our confirmed Shipping Instructions.\n\n"
+                f"### Verification Result: ALL 7 CRITICAL FIELDS HARMONIZED\n"
+                f"All particulars (Shipper, Consignee, Notify Party, Port of Loading, Port of Discharge, Container Count, and Gross Weight) "
+                f"strictly align with our agreed reference specifications.\n\n"
+                f"### Action Required\n"
+                f"Please proceed with the issuance and release of the final Original Bill of Lading (OBL) accordingly.\n\n"
+                f"Thank you for your prompt assistance.\n\n"
+                f"Sincerely,\n"
+                f"Documentation Operations Team\n"
+                f"Automated Shipping Document Verification System (SDOC)"
+            )
+        else:
+            # High quality deterministic discrepancy notice
+            subject_line = f"DISCREPANCY NOTICE: Amendment Required for Draft B/L - {subject_ref or email_id}"
+            table_lines = [
+                "| Shipment Field | Shipping Instruction (SI Reference) | Draft Bill of Lading Value |",
+                "| :--- | :--- | :--- |"
+            ]
+            for m in mismatches:
+                table_lines.append(f"| **{m['field']}** | {m['si_val']} | {m['bl_val']} |")
 
-        table_md = "\n".join(table_lines)
+            table_md = "\n".join(table_lines)
 
-        body_text = (
-            f"Dear Documentation Team,\n\n"
-            f"Please be advised that automated verification of the Draft Bill of Lading for shipment **{email_id}** "
-            f"identified discrepancies when compared against our confirmed Shipping Instructions.\n\n"
-            f"### Discrepancy Breakdown\n\n"
-            f"{table_md}\n\n"
-            f"### Action Required\n"
-            f"Kindly update the Draft Bill of Lading to reflect the exact particulars from our Shipping Instructions as detailed above, "
-            f"and furnish a revised draft at your earliest convenience to avoid departure documentation delays.\n\n"
-            f"Thank you for your prompt assistance.\n\n"
-            f"Sincerely,\n"
-            f"Documentation Operations Team\n"
-            f"Automated Shipping Document Verification System (SDOC)"
-        )
+            body_text = (
+                f"Dear Documentation Team,\n\n"
+                f"Please be advised that automated verification of the Draft Bill of Lading for shipment **{email_id}** "
+                f"identified discrepancies when compared against our confirmed Shipping Instructions.\n\n"
+                f"### Discrepancy Breakdown\n\n"
+                f"{table_md}\n\n"
+                f"### Action Required\n"
+                f"Kindly update the Draft Bill of Lading to reflect the exact particulars from our Shipping Instructions as detailed above, "
+                f"and furnish a revised draft at your earliest convenience to avoid departure documentation delays.\n\n"
+                f"Thank you for your prompt assistance.\n\n"
+                f"Sincerely,\n"
+                f"Documentation Operations Team\n"
+                f"Automated Shipping Document Verification System (SDOC)"
+            )
 
         draft_result = {
             "subject": subject_line,

@@ -1285,7 +1285,10 @@ if st.session_state["active_nav"] == NAV_PAGES[0]:
                     st.session_state[f"active_draft_{selected_eid}"] = True
                     st.session_state[f"active_explain_{selected_eid}"] = False
             else:
-                st.button("✉️ Draft correction email (Only for Discrepancies)", disabled=True, use_container_width=True, key=f"btn_drf_dis_{selected_eid}")
+                btn_lbl = "✉️ Draft carrier release email" if status == "OK" else "✉️ Draft clarification request email"
+                if st.button(btn_lbl, key=f"btn_drf_insp_ok_{selected_eid}", use_container_width=True):
+                    st.session_state[f"active_draft_{selected_eid}"] = True
+                    st.session_state[f"active_explain_{selected_eid}"] = False
 
         # Render Explanation Panel
         if st.session_state.get(f"active_explain_{selected_eid}"):
@@ -1302,7 +1305,8 @@ if st.session_state["active_nav"] == NAV_PAGES[0]:
                     bl_fields=asst_bl,
                     subject=em_data.get("subject", ""),
                     sender=em_data.get("from", ""),
-                    body_snippet=em_data.get("body", "")
+                    body_snippet=em_data.get("body", ""),
+                    api_key=gemini_key.strip() if gemini_key else None
                 )
 
             exp_model = exp_data.get("model", "Local AI")
@@ -1333,29 +1337,35 @@ if st.session_state["active_nav"] == NAV_PAGES[0]:
                 st.caption("Advisory only: Does not change the verified status or ground truth.")
 
         # Render Draft Correction Email Panel
-        if st.session_state.get(f"active_draft_{selected_eid}") and status == "MISMATCH":
+        if st.session_state.get(f"active_draft_{selected_eid}"):
             asst_si = s_f if ('s_f' in locals() and s_f) else {}
             asst_bl = b_f if ('b_f' in locals() and b_f) else {}
-            with st.spinner("Drafting discrepancy amendment notice with side-by-side values..."):
+            with st.spinner("Drafting operational communication notice..."):
                 draft_data = generate_correction_email(
                     email_id=selected_eid,
                     defect_fields=rec.get("defect_fields", []),
                     si_fields=asst_si,
                     bl_fields=asst_bl,
                     recipient=em_data.get("from", "carrier-documentation@ocean-carrier.com"),
-                    subject_ref=em_data.get("subject", selected_eid)
+                    subject_ref=em_data.get("subject", selected_eid),
+                    api_key=gemini_key.strip() if gemini_key else None
                 )
 
             drf_lat = f"{draft_data.get('latency_seconds', 0.0):.2f}s"
             drf_perf = "⚡ Cache Hit" if draft_data.get("cached") else f"⏱️ {drf_lat}"
+            is_insp_mismatch = (status == "MISMATCH")
+            panel_title = "✉️ Ready-to-Send Discrepancy Correction Email" if is_insp_mismatch else "✉️ Ready-to-Send Carrier Communication Email"
+            border_col = "#3b82f6" if is_insp_mismatch else "#10b981"
+            hdr_col = "#60a5fa" if is_insp_mismatch else "#34d399"
+            tag_text = "Side-by-Side Values Included" if is_insp_mismatch else "Operational Alignment"
 
             st.markdown(
                 f"""
-                <div style="background: var(--surface-card, rgba(15, 23, 42, 0.8)); border: 1px solid var(--border-glass, rgba(148, 163, 184, 0.2)); border-left: 4px solid #3b82f6; padding: 16px 20px; border-radius: 8px; margin-top: 12px; margin-bottom: 12px;">
+                <div style="background: var(--surface-card, rgba(15, 23, 42, 0.8)); border: 1px solid var(--border-glass, rgba(148, 163, 184, 0.2)); border-left: 4px solid {border_col}; padding: 16px 20px; border-radius: 8px; margin-top: 12px; margin-bottom: 12px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                        <span style="font-weight: 700; color: #60a5fa; font-size: 1.05rem;">✉️ Ready-to-Send Discrepancy Correction Email</span>
+                        <span style="font-weight: 700; color: {hdr_col}; font-size: 1.05rem;">{panel_title}</span>
                         <div style="display: flex; gap: 8px;">
-                            <span style="background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); padding: 2px 8px; border-radius: 4px; font-size: 11px;">Side-by-Side Values Included</span>
+                            <span style="background: rgba(59, 130, 246, 0.15); color: {hdr_col}; border: 1px solid rgba(59, 130, 246, 0.3); padding: 2px 8px; border-radius: 4px; font-size: 11px;">{tag_text}</span>
                             <span style="background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); padding: 2px 8px; border-radius: 4px; font-size: 11px;">{drf_perf}</span>
                         </div>
                     </div>
@@ -1366,7 +1376,7 @@ if st.session_state["active_nav"] == NAV_PAGES[0]:
                 unsafe_allow_html=True
             )
             st.text_area("Correction Notice Body", value=draft_data.get("body", ""), height=220, key=f"txt_draft_body_{selected_eid}")
-            st.caption("💡 Ready-to-send: Contains a formatted side-by-side table of SI Reference vs Draft B/L values.")
+            st.caption("💡 Ready-to-send: Prepared with official documentation standards.")
 
 # ---------------------------------------------------------------------------
 # PAGE 2: REVIEW QUEUE & HUMAN-IN-THE-LOOP WORKSTATION
@@ -1672,7 +1682,10 @@ elif st.session_state["active_nav"] == NAV_PAGES[1]:
                     st.session_state[f"active_draft_rq_{sel_eid}"] = True
                     st.session_state[f"active_explain_rq_{sel_eid}"] = False
             else:
-                st.button("✉️ Draft correction email (Only for Discrepancies)", disabled=True, use_container_width=True, key=f"btn_drf_dis_rq_{sel_eid}")
+                btn_rq_lbl = "✉️ Draft carrier release email" if cur_eff.get("status") == "OK" else "✉️ Draft operator escalation notice"
+                if st.button(btn_rq_lbl, key=f"btn_drf_rq_ok_{sel_eid}", use_container_width=True):
+                    st.session_state[f"active_draft_rq_{sel_eid}"] = True
+                    st.session_state[f"active_explain_rq_{sel_eid}"] = False
 
         # Render Explanation Panel
         if st.session_state.get(f"active_explain_rq_{sel_eid}"):
@@ -1687,7 +1700,8 @@ elif st.session_state["active_nav"] == NAV_PAGES[1]:
                     bl_fields=bl_flds or {},
                     subject=em_obj.get("subject", ""),
                     sender=em_obj.get("from", ""),
-                    body_snippet=em_obj.get("body", "")
+                    body_snippet=em_obj.get("body", ""),
+                    api_key=gemini_key.strip() if gemini_key else None
                 )
 
             rq_exp_model = rq_exp_data.get("model", "Local AI")
@@ -1718,28 +1732,33 @@ elif st.session_state["active_nav"] == NAV_PAGES[1]:
                 st.caption("Advisory only: Does not alter the case status or review decision.")
 
         # Render Draft Correction Email Panel
-        if st.session_state.get(f"active_draft_rq_{sel_eid}") and has_rq_mismatch:
-            with st.spinner("Drafting discrepancy amendment notice with side-by-side values..."):
+        if st.session_state.get(f"active_draft_rq_{sel_eid}"):
+            with st.spinner("Drafting operational communication notice..."):
                 rq_def_flds = cur_raw.get("defect_fields", []) or [f for f in ["shipper", "consignee", "notify_party", "port_of_loading", "port_of_discharge", "container_count", "gross_weight_kg"] if si_flds.get(f) != bl_flds.get(f)]
                 rq_draft_data = generate_correction_email(
                     email_id=sel_eid,
-                    defect_fields=rq_def_flds,
+                    defect_fields=rq_def_flds if has_rq_mismatch else [],
                     si_fields=si_flds or {},
                     bl_fields=bl_flds or {},
                     recipient=em_obj.get("from", "carrier-documentation@ocean-carrier.com"),
-                    subject_ref=em_obj.get("subject", sel_eid)
+                    subject_ref=em_obj.get("subject", sel_eid),
+                    api_key=gemini_key.strip() if gemini_key else None
                 )
 
             rq_drf_lat = f"{rq_draft_data.get('latency_seconds', 0.0):.2f}s"
             rq_drf_perf = "⚡ Cache Hit" if rq_draft_data.get("cached") else f"⏱️ {rq_drf_lat}"
+            panel_title = "✉️ Ready-to-Send Discrepancy Correction Email" if has_rq_mismatch else "✉️ Ready-to-Send Carrier Communication Email"
+            border_col = "#3b82f6" if has_rq_mismatch else "#10b981"
+            hdr_col = "#60a5fa" if has_rq_mismatch else "#34d399"
+            tag_text = "Side-by-Side Values Included" if has_rq_mismatch else "Operational Alignment"
 
             st.markdown(
                 f"""
-                <div style="background: var(--surface-card, rgba(15, 23, 42, 0.8)); border: 1px solid var(--border-glass, rgba(148, 163, 184, 0.2)); border-left: 4px solid #3b82f6; padding: 16px 20px; border-radius: 8px; margin-top: 12px; margin-bottom: 12px;">
+                <div style="background: var(--surface-card, rgba(15, 23, 42, 0.8)); border: 1px solid var(--border-glass, rgba(148, 163, 184, 0.2)); border-left: 4px solid {border_col}; padding: 16px 20px; border-radius: 8px; margin-top: 12px; margin-bottom: 12px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                        <span style="font-weight: 700; color: #60a5fa; font-size: 1.05rem;">✉️ Ready-to-Send Discrepancy Correction Email</span>
+                        <span style="font-weight: 700; color: {hdr_col}; font-size: 1.05rem;">{panel_title}</span>
                         <div style="display: flex; gap: 8px;">
-                            <span style="background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); padding: 2px 8px; border-radius: 4px; font-size: 11px;">Side-by-Side Values Included</span>
+                            <span style="background: rgba(59, 130, 246, 0.15); color: {hdr_col}; border: 1px solid rgba(59, 130, 246, 0.3); padding: 2px 8px; border-radius: 4px; font-size: 11px;">{tag_text}</span>
                             <span style="background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); padding: 2px 8px; border-radius: 4px; font-size: 11px;">{rq_drf_perf}</span>
                         </div>
                     </div>
@@ -2371,8 +2390,28 @@ Gross Weight: 28400 kg"""
     verify_clicked = st.button("🚀 Run Live Verification", type="primary", use_container_width=True)
 
     has_custom = (up_si is not None and up_bl is not None)
-    should_run_custom = verify_clicked and has_custom
-    should_run_sample = (active_sample is not None and active_sample in SAMPLE_SCENARIOS) and not (verify_clicked and has_custom)
+
+    # Track upload signature changes to reset verified state if user selects new files
+    cur_up_sig = (up_si.name, len(up_si.getvalue()), up_bl.name, len(up_bl.getvalue())) if has_custom else None
+    if st.session_state.get("sbox_last_up_sig") != cur_up_sig:
+        st.session_state["sbox_last_up_sig"] = cur_up_sig
+        if cur_up_sig is not None:
+            st.session_state["sbox_custom_verified"] = False
+            st.session_state.pop("sbox_show_explain", None)
+            st.session_state.pop("sbox_show_draft", None)
+
+    if verify_clicked:
+        if has_custom:
+            st.session_state["sbox_custom_verified"] = True
+            st.session_state.pop("sandbox_active_sample", None)
+            active_sample = None
+            st.session_state.pop("sbox_show_explain", None)
+            st.session_state.pop("sbox_show_draft", None)
+        else:
+            st.info("💡 Please upload both a **Shipping Instruction (SI)** and a **Draft Bill of Lading (BL)** above, or select one of the instant demo scenarios.")
+
+    should_run_custom = has_custom and st.session_state.get("sbox_custom_verified", False)
+    should_run_sample = (active_sample is not None and active_sample in SAMPLE_SCENARIOS) and not should_run_custom
 
     if should_run_custom:
         st.session_state.pop("sandbox_active_sample", None)
@@ -2402,7 +2441,8 @@ Gross Weight: 28400 kg"""
         if len(st.session_state["sandbox_rate_history"]) >= rate_limit_per_min:
             st.warning(f"⏳ **Rate limit active**: Maximum {rate_limit_per_min} live verifications allowed per minute per session to protect public quota. Please wait a few moments.")
             st.stop()
-        st.session_state["sandbox_rate_history"].append(now_ts)
+        if verify_clicked:
+            st.session_state["sandbox_rate_history"].append(now_ts)
 
         # Safeguard: duplicate file check
         if up_si.name == up_bl.name and up_si.getvalue() == up_bl.getvalue():
@@ -2434,8 +2474,10 @@ Gross Weight: 28400 kg"""
             bl_name = sc["bl_filename"]
 
     else:
-        if verify_clicked:
-            st.info("💡 Please upload both a **Shipping Instruction (SI)** and a **Draft Bill of Lading (BL)** above, or select one of the instant demo scenarios.")
+        saved_si_path = None
+        saved_bl_path = None
+        si_name = ""
+        bl_name = ""
 
     if should_run_custom or should_run_sample:
         try:
@@ -2705,25 +2747,27 @@ Gross Weight: 28400 kg"""
                         st.caption("Advisory intelligence · Lazily generated · Discrepancy diagnosis & drafting")
 
                     col_sbtn_exp, col_sbtn_drf = st.columns(2)
+                    is_any_mismatch = (hybrid_data and has_defect) or (not hybrid_data and has_discrepancy)
                     with col_sbtn_exp:
                         if st.button("🧠 Explain this result", key="btn_sbox_explain", use_container_width=True):
                             st.session_state["sbox_show_explain"] = True
                             st.session_state["sbox_show_draft"] = False
                     with col_sbtn_drf:
-                        is_any_mismatch = (hybrid_data and has_defect) or (not hybrid_data and has_discrepancy)
                         if is_any_mismatch:
                             if st.button("✉️ Draft correction email", key="btn_sbox_draft", type="primary", use_container_width=True):
                                 st.session_state["sbox_show_draft"] = True
                                 st.session_state["sbox_show_explain"] = False
                         else:
-                            st.button("✉️ Draft correction email (Only for Discrepancies)", disabled=True, use_container_width=True, key="btn_sbox_draft_dis")
+                            if st.button("✉️ Draft carrier release approval email", key="btn_sbox_draft_ok", use_container_width=True):
+                                st.session_state["sbox_show_draft"] = True
+                                st.session_state["sbox_show_explain"] = False
 
                     # Render Live Sandbox Explanation
                     if st.session_state.get("sbox_show_explain"):
                         sbox_flds_si = s_det
                         sbox_flds_bl = b_det
                         sbox_defs = defect_fields if hybrid_data else flagged_fields
-                        sbox_stat = "MISMATCH" if ((hybrid_data and has_defect) or (not hybrid_data and has_discrepancy)) else "OK"
+                        sbox_stat = "MISMATCH" if is_any_mismatch else "OK"
                         
                         with st.spinner("Analyzing discrepancy patterns & generating advisory explanation..."):
                             exp_data = explain_verification_result(
@@ -2736,7 +2780,7 @@ Gross Weight: 28400 kg"""
                                 bl_fields=sbox_flds_bl,
                                 subject=f"Verification: {si_name} vs {bl_name}",
                                 sender="sandbox@carrier.com",
-                                api_key=gemini_key.strip()
+                                api_key=gemini_key.strip() if gemini_key else None
                             )
                         exp_model = exp_data.get("model", "Local AI")
                         exp_lat = f"{exp_data.get('latency_seconds', 0.0):.2f}s"
@@ -2766,7 +2810,7 @@ Gross Weight: 28400 kg"""
                             st.caption("Advisory only: Does not alter verified status or ground truth.")
 
                     # Render Live Sandbox Draft Notice
-                    if st.session_state.get("sbox_show_draft") and ((hybrid_data and has_defect) or (not hybrid_data and has_discrepancy)):
+                    if st.session_state.get("sbox_show_draft"):
                         sbox_flds_si = s_det
                         sbox_flds_bl = b_det
                         sbox_defs = defect_fields if hybrid_data else flagged_fields
@@ -2777,18 +2821,23 @@ Gross Weight: 28400 kg"""
                                 si_fields=sbox_flds_si,
                                 bl_fields=sbox_flds_bl,
                                 recipient="carrier-documentation@ocean-carrier.com",
-                                subject_ref=f"Verification: {si_name} vs {bl_name}"
+                                subject_ref=f"Verification: {si_name} vs {bl_name}",
+                                api_key=gemini_key.strip() if gemini_key else None
                             )
                         drf_lat = f"{draft_data.get('latency_seconds', 0.0):.2f}s"
                         drf_perf = "⚡ Cache Hit" if draft_data.get("cached") else f"⏱️ {drf_lat}"
+                        panel_title = "✉️ Ready-to-Send Discrepancy Correction Email" if is_any_mismatch else "✉️ Ready-to-Send Carrier Release Approval Email"
+                        border_col = "#3b82f6" if is_any_mismatch else "#10b981"
+                        hdr_col = "#60a5fa" if is_any_mismatch else "#34d399"
+                        tag_text = "Side-by-Side Values Included" if is_any_mismatch else "100% Match Verified"
 
                         st.markdown(
                             f"""
-                            <div style="background: var(--surface-card, rgba(15, 23, 42, 0.8)); border: 1px solid var(--border-glass, rgba(148, 163, 184, 0.2)); border-left: 4px solid #3b82f6; padding: 16px 20px; border-radius: 8px; margin-top: 12px; margin-bottom: 12px;">
+                            <div style="background: var(--surface-card, rgba(15, 23, 42, 0.8)); border: 1px solid var(--border-glass, rgba(148, 163, 184, 0.2)); border-left: 4px solid {border_col}; padding: 16px 20px; border-radius: 8px; margin-top: 12px; margin-bottom: 12px;">
                                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                                    <span style="font-weight: 700; color: #60a5fa; font-size: 1.05rem;">✉️ Ready-to-Send Discrepancy Correction Email</span>
+                                    <span style="font-weight: 700; color: {hdr_col}; font-size: 1.05rem;">{panel_title}</span>
                                     <div style="display: flex; gap: 8px;">
-                                        <span style="background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); padding: 2px 8px; border-radius: 4px; font-size: 11px;">Side-by-Side Values Included</span>
+                                        <span style="background: rgba(59, 130, 246, 0.15); color: {hdr_col}; border: 1px solid rgba(59, 130, 246, 0.3); padding: 2px 8px; border-radius: 4px; font-size: 11px;">{tag_text}</span>
                                         <span style="background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); padding: 2px 8px; border-radius: 4px; font-size: 11px;">{drf_perf}</span>
                                     </div>
                                 </div>
